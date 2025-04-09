@@ -1,0 +1,27 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <tab name="Init" type="InitTab" active="false" scrollx="20" scrolly="20.000000000000114" scale="0.9"></tab>
+  <tab name="New Tab" type="CommonTab" active="true" scrollx="19.99999999999966" scrolly="20.000000000000227" scale="0.9">
+    <block xmlns="https://developers.google.com/blockly/xml" type="setActiveCamera" id="~(I+r(4FBdh)x?hT3E%6" x="90" y="130">
+      <value name="CAMERA">
+        <shadow type="objectList" id="[.3!nWyD-Z;XEEe0J:df">
+          <field name="FIELDNAME">__DEFAULT_CAMERA__</field>
+        </shadow>
+      </value>
+      <next>
+        <block type="lookAt" id="Zf7lAy#o_UE:K5n1v|?G">
+          <value name="LOOKAT">
+            <shadow type="objectList" id="pa%,_baao{wJe{kW/M?i">
+              <field name="FIELDNAME">cloud_sign</field>
+            </shadow>
+          </value>
+          <value name="DURATION">
+            <shadow type="math_number" id="]rNRu3a9`HiF@^lcrx:k">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+        </block>
+      </next>
+    </block>
+  </tab>
+  <editorsettings viewport-x="862.1999999999999" viewport-y="37" viewport-w="586.8" viewport-h="432" viewport-hidden="false" toolbox-library-mode="false" toolbox-minimized-mode="false"></editorsettings>
+</xml>
