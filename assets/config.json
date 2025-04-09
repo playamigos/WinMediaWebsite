@@ -1,0 +1,12 @@
+{
+    "images": [
+      { "url": "/media/grass_1.webp", "position": [-2, 0, 0], "name": "image1", "onClick": "alert('You clicked Image1!')" },
+      { "url": "/media/grass_2.webp", "shader": true, "position": [-1, 0, 0], "name": "deformImage" }
+    ],
+    "texts": [
+      { "text": "Welcome!", "position": [1, 0, 0], "name": "welcomeText", "onClick": "window.location.href='https://example.com';" }
+    ],
+    "gifs": [
+      { "url": "/media/grass_3.webp", "position": [0, -1, 0], "name": "gif1" }
+    ]
+  }
