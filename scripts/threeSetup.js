@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 export function setupScene(containerId) {
     const container = document.getElementById(containerId);
@@ -15,9 +18,29 @@ export function setupScene(containerId) {
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
+    // Corrected bloom logic
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        0.5, // Strength of bloom
+        0.4, // Radius
+        0.8 // Threshold
+    );
+    composer.addPass(bloomPass);
+
+    // Ensure bloom pass resolution updates on window resize
+    window.addEventListener('resize', () => {
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        composer.setSize(container.clientWidth, container.clientHeight);
+        bloomPass.resolution.set(container.clientWidth, container.clientHeight);
+    });
+
     const animate = function () {
         requestAnimationFrame(animate);
-        renderer.render(scene, camera);
+        composer.render();
     };
 
     animate();
