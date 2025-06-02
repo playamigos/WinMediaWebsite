@@ -1,6 +1,9 @@
 import { setupScene } from './threeSetup.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 // Module-level variable to store all scene objects and the animated mesh
 let headSceneObjects;
@@ -21,6 +24,24 @@ export function initHead() {
     // Add ambient light to the scene
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Adjust intensity as needed
     headSceneObjects.scene.add(ambientLight);
+
+    // Add bloom effect
+    const composer = new EffectComposer(headSceneObjects.renderer);
+    const renderPass = new RenderPass(headSceneObjects.scene, headSceneObjects.camera);
+    composer.addPass(renderPass);
+
+    const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        0.5, // Strength of bloom
+        0.5, // Radius
+        0.5 // Threshold
+    );
+    composer.addPass(bloomPass);
+
+    // Update the animation loop to use the composer
+    headSceneObjects.renderer.setAnimationLoop(() => {
+        composer.render();
+    });
 
     return headSceneObjects;
 }
