@@ -13,6 +13,7 @@ export function initHead() {
     const loader = new GLTFLoader();
     loader.load('scenes/Head_scene.glb', (gltf) => {
         const model = gltf.scene;
+        induceSceneChanges(model);
         headSceneObjects.scene.add(model);
     }, undefined, (error) => {
         console.error('An error occurred while loading the GLTF model:', error);
@@ -21,24 +22,7 @@ export function initHead() {
     // Add ambient light to the scene
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Adjust intensity as needed
     headSceneObjects.scene.add(ambientLight);
-
-    // // Add bloom effect
-    // const composer = new EffectComposer(headSceneObjects.renderer);
-    // const renderPass = new RenderPass(headSceneObjects.scene, headSceneObjects.camera);
-    // composer.addPass(renderPass);
-
-    // const bloomPass = new UnrealBloomPass(
-    //     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    //     0.5, // Strength of bloom
-    //     0.5, // Radius
-    //     0.5 // Threshold
-    // );
-    // composer.addPass(bloomPass);
-
-    // // Update the animation loop to use the composer
-    // headSceneObjects.renderer.setAnimationLoop(() => {
-    //     composer.render();
-    // });
+   
 
     return headSceneObjects;
 }
@@ -55,4 +39,20 @@ document.addEventListener('mousemove', (event) => {
     headSceneObjects.camera.rotation.x = -rotationX;
     headSceneObjects.camera.rotation.y = -rotationY;
 });
+
+
+function induceSceneChanges(model) {
+    //add emissive to a material in the scene by particular material name
+    model.traverse((child) => {
+        if (child.isMesh) {
+            //check if material supports emissive
+            if (child.material && child.material.emissive) {
+                child.material.emissiveIntensity = 1.2; // Set emissive intensity
+            }
+        }
+    });
+
+
+}
+
 

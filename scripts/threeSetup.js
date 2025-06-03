@@ -14,7 +14,7 @@ export function setupScene(containerId) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.z = 3.7;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
@@ -27,9 +27,9 @@ export function setupScene(containerId) {
 
     const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.5, // Strength of bloom
+        1, // Strength of bloom
         0.4, // Radius
-        0.8 // Threshold
+        0.01 // Threshold
     );
     composer.addPass(bloomPass);
 
