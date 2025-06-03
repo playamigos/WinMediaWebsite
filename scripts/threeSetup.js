@@ -4,6 +4,12 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+
+function blenderWattsToCandela(watts) {
+    watts = watts/1000;
+    return (683 * watts) / (4 * Math.PI);
+}
 
 export function setupScene(containerId) {
     const container = document.getElementById(containerId);
@@ -14,36 +20,68 @@ export function setupScene(containerId) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.z = 3.7;
+    camera.position.z = 3.8;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        useLegacyLights: true,
+        powerPreference: "high-performance"
+    });
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.03;
+    
+    // Set pixel ratio for better quality on high-DPI displays
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    // Corrected bloom logic
     const composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
 
     const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        1, // Strength of bloom
-        0.4, // Radius
-        0.1 // Threshold
+        0.5,
+        0.4,
+        0.3
     );
     composer.addPass(bloomPass);
 
-    // Add FXAA pass for improved anti-aliasing
+    // Add SMAA pass for higher quality anti-aliasing
+    const smaaPass = new SMAAPass(
+        container.clientWidth * renderer.getPixelRatio(),
+        container.clientHeight * renderer.getPixelRatio()
+    );
+    composer.addPass(smaaPass);
+
+    // Add FXAA pass as a fallback
     const fxaaPass = new ShaderPass(FXAAShader);
-    fxaaPass.material.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+    const pixelRatio = renderer.getPixelRatio();
+    fxaaPass.material.uniforms['resolution'].value.set(
+        1 / (container.clientWidth * pixelRatio),
+        1 / (container.clientHeight * pixelRatio)
+    );
     composer.addPass(fxaaPass);
 
-    // Ensure bloom pass and FXAA resolution updates on window resize
+    // Update handler for window resize
     window.addEventListener('resize', () => {
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        composer.setSize(container.clientWidth, container.clientHeight);
-        bloomPass.resolution.set(container.clientWidth, container.clientHeight);
-        fxaaPass.material.uniforms['resolution'].value.set(1 / container.clientWidth, 1 / container.clientHeight);
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        
+        renderer.setSize(width, height);
+        composer.setSize(width, height);
+        
+        const pixelRatio = renderer.getPixelRatio();
+        bloomPass.resolution.set(width, height);
+        fxaaPass.material.uniforms['resolution'].value.set(
+            1 / (width * pixelRatio),
+            1 / (height * pixelRatio)
+        );
+        smaaPass.setSize(width * pixelRatio, height * pixelRatio);
     });
 
     const animate = function () {
@@ -53,5 +91,16 @@ export function setupScene(containerId) {
 
     animate();
 
-    return { scene, camera, renderer };
+    return { 
+        scene, 
+        camera, 
+        renderer,
+        convertLightIntensities: (model) => {
+            model.traverse((child) => {
+                if (child.isLight) {
+                    child.intensity = blenderWattsToCandela(child.intensity);
+                }
+            });
+        }
+    };
 }

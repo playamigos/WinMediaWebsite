@@ -2,8 +2,11 @@ import { setupScene } from './threeSetup.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 
-// Module-level variable to store all scene objects and the animated mesh
+// Module-level variables
 let headSceneObjects;
+let targetRotation = { x: 0, y: 0 };
+let currentRotation = { x: 0, y: 0 };
+let model;
 
 export function initHead() {
     const containerId = 'head-section';
@@ -12,47 +15,55 @@ export function initHead() {
     // Load the GLTF model
     const loader = new GLTFLoader();
     loader.load('scenes/Head_scene.glb', (gltf) => {
-        const model = gltf.scene;
-        induceSceneChanges(model);
+        model = gltf.scene;
+        headSceneObjects.convertLightIntensities(model);
         headSceneObjects.scene.add(model);
+        
+        // Start the animation loop
+        animate();
     }, undefined, (error) => {
         console.error('An error occurred while loading the GLTF model:', error);
     });
-
-    // Add ambient light to the scene
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Adjust intensity as needed
-    headSceneObjects.scene.add(ambientLight);
-   
 
     return headSceneObjects;
 }
 
 document.addEventListener('mousemove', (event) => {
-    if (!headSceneObjects || !headSceneObjects.camera) return;
+    if (!model) return;
 
     const { clientX, clientY } = event;
     const { innerWidth, innerHeight } = window;
 
-    const rotationX = (clientY / innerHeight - 0.5) * 0.2; // Adjust rotation factor as needed
-    const rotationY = (clientX / innerWidth - 0.5) * 0.2;
-
-    headSceneObjects.camera.rotation.x = -rotationX;
-    headSceneObjects.camera.rotation.y = -rotationY;
+    // Update target rotation based on mouse position
+    targetRotation.x = ((clientY / innerHeight) - 0.5) * Math.PI * 0.01;
+    targetRotation.y = ((clientX / innerWidth) - 0.5) * Math.PI * 0.01;
 });
 
+function animate() {
+    if (!model) return;
 
-function induceSceneChanges(model) {
-    //add emissive to a material in the scene by particular material name
-    model.traverse((child) => {
-        if (child.isMesh) {
-            //check if material supports emissive
-            if (child.material && child.material.emissive) {
-                child.material.emissiveIntensity = 1.2; // Set emissive intensity
-            }
-        }
-    });
+    // Spring constants
+    const springStrength = 0.08;
+    const damping = 0.95;
 
+    // Calculate spring physics
+    const dx = targetRotation.x - currentRotation.x;
+    const dy = targetRotation.y - currentRotation.y;
 
+    // Apply spring force
+    currentRotation.x += dx * springStrength;
+    currentRotation.y += dy * springStrength;
+
+    // Apply damping
+    currentRotation.x *= damping;
+    currentRotation.y *= damping;
+
+    // Apply rotation to the model
+    model.rotation.x = currentRotation.x;
+    model.rotation.y = currentRotation.y;
+
+    // Request next frame
+    requestAnimationFrame(animate);
 }
 
 
