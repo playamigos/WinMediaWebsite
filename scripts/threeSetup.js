@@ -29,7 +29,7 @@ export function setupScene(containerId) {
         new THREE.Vector2(window.innerWidth, window.innerHeight),
         1, // Strength of bloom
         0.4, // Radius
-        0.01 // Threshold
+        0.1 // Threshold
     );
     composer.addPass(bloomPass);
 

@@ -16,6 +16,7 @@
         body {
             margin: 0;
             overflow-x: hidden;
+            background-color: black;
         }
         section {
             width: 100vw;
@@ -34,13 +35,32 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 24px;
             z-index: 1000;
+        }
+
+        #loader .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(245, 245, 245, 0.226);
+            border-top: 5px solid #ff4800;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
-    <div id="loader">Loading...</div>
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
     <section id="head-section">
     </section>
     <script type="module" src="scripts/threeSetup.js"></script>
