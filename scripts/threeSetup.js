@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
 export function setupScene(containerId) {
     const container = document.getElementById(containerId);
@@ -31,11 +33,17 @@ export function setupScene(containerId) {
     );
     composer.addPass(bloomPass);
 
-    // Ensure bloom pass resolution updates on window resize
+    // Add FXAA pass for improved anti-aliasing
+    const fxaaPass = new ShaderPass(FXAAShader);
+    fxaaPass.material.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+    composer.addPass(fxaaPass);
+
+    // Ensure bloom pass and FXAA resolution updates on window resize
     window.addEventListener('resize', () => {
         renderer.setSize(container.clientWidth, container.clientHeight);
         composer.setSize(container.clientWidth, container.clientHeight);
         bloomPass.resolution.set(container.clientWidth, container.clientHeight);
+        fxaaPass.material.uniforms['resolution'].value.set(1 / container.clientWidth, 1 / container.clientHeight);
     });
 
     const animate = function () {
