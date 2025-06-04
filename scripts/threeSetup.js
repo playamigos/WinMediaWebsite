@@ -29,7 +29,7 @@ export function setupScene(containerId) {
     });
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.03;
+    renderer.toneMappingExposure = 0.2;
     
     // Set pixel ratio for better quality on high-DPI displays
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -42,9 +42,9 @@ export function setupScene(containerId) {
 
     const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.5,
-        0.4,
-        0.3
+        0.7,
+        0.2,
+        0.1
     );
     composer.addPass(bloomPass);
 
