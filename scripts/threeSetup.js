@@ -19,8 +19,8 @@ export function setupScene(containerId) {
     }
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.z = 3.8;
+    const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.01, 10000);
+    camera.position.z = 1.8;
 
     const renderer = new THREE.WebGLRenderer({ 
         antialias: true,
@@ -29,7 +29,7 @@ export function setupScene(containerId) {
     });
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.2;
+    renderer.toneMappingExposure = 1.3;
     
     // Set pixel ratio for better quality on high-DPI displays
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -40,10 +40,11 @@ export function setupScene(containerId) {
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
 
+    // Bloom pass for enhanced lighting effects
     const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.7,
-        0.2,
+        0.4,
+        0.1,
         0.1
     );
     composer.addPass(bloomPass);

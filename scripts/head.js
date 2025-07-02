@@ -7,17 +7,33 @@ let headSceneObjects;
 let targetRotation = { x: 0, y: 0 };
 let currentRotation = { x: 0, y: 0 };
 let model;
+let mixer;
+let clock;
 
 export function initHead() {
     const containerId = 'head-section';
     headSceneObjects = setupScene(containerId);
+    
+    // Initialize clock for animation mixer
+    clock = new THREE.Clock();
 
     // Load the GLTF model
     const loader = new GLTFLoader();
-    loader.load('scenes/Head_scene.glb', (gltf) => {
+    loader.load('scenes/Untitled.glb', (gltf) => {
         model = gltf.scene;
         headSceneObjects.convertLightIntensities(model);
         headSceneObjects.scene.add(model);
+        
+        // Set up animation mixer if animations exist
+        if (gltf.animations && gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(model);
+            
+            // Play all animations
+            gltf.animations.forEach((clip) => {
+                const action = mixer.clipAction(clip);
+                action.play();
+            });
+        }
         
         // Start the animation loop
         animate();
@@ -35,12 +51,18 @@ document.addEventListener('mousemove', (event) => {
     const { innerWidth, innerHeight } = window;
 
     // Update target rotation based on mouse position
-    targetRotation.x = ((clientY / innerHeight) - 0.5) * Math.PI * 0.01;
-    targetRotation.y = ((clientX / innerWidth) - 0.5) * Math.PI * 0.01;
+    targetRotation.x = ((clientY / innerHeight) - 0.5) * Math.PI * 0.05;
+    targetRotation.y = ((clientX / innerWidth) - 0.5) * Math.PI * 0.05;
 });
 
 function animate() {
     if (!model) return;
+
+    // Update animation mixer if it exists
+    if (mixer) {
+        const delta = clock.getDelta();
+        mixer.update(delta);
+    }
 
     // Spring constants
     const springStrength = 0.08;
