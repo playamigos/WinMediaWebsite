@@ -19,7 +19,7 @@ export function initHead() {
 
     // Load the GLTF model
     const loader = new GLTFLoader();
-    loader.load('scenes/Untitled.glb', (gltf) => {
+    loader.load('scenes/Head_scene.glb', (gltf) => {
         model = gltf.scene;
         headSceneObjects.convertLightIntensities(model);
         headSceneObjects.scene.add(model);
