@@ -42,7 +42,7 @@
             width: 50px;
             height: 50px;
             border: 5px solid rgba(245, 245, 245, 0.226);
-            border-top: 5px solid #ff4800;
+            border-top: 5px solid #ffee00;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -55,6 +55,197 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Neon button styles */
+        #neon-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .neon-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffee00;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 12px 30px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 238, 0, 0.4);
+            backdrop-filter: blur(5px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .neon-btn:hover {
+            background: rgba(255, 238, 0, 0.6);
+            border: 2px solid #000000;
+            box-shadow: 0 0 25px rgba(255, 238, 0, 0.6);
+            transform: translateY(-2px);
+            color: #000000;
+        }
+
+        /* Popup styles */
+        .neon-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.836);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-content {
+            background: rgb(0, 0, 0);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 25px rgba(255, 238, 0, 0.2),
+                        0 0 15px rgba(255, 238, 0, 0.1);
+            border: 1px solid rgba(255, 238, 0, 0.3);
+            color: #ffffff;
+            font-family: Tahoma, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .popup-content p {
+            margin: 15px 0;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .career-tiles {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .career-tile {
+            background: rgba(255, 238, 0, 0.1);
+            border: 1px solid rgba(255, 238, 0, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(255, 238, 0, 0.2);
+        }
+
+        .career-tile a {
+            display: block;
+            padding: 20px;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .career-tile:hover {
+            background: rgba(255, 238, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 238, 0, 0.3);
+        }
+        
+        .career-tile:hover a {
+            color: #ffee00;
+        }
+
+        .contact-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 238, 0, 0.2);
+        }
+
+        .contact-info h3 {
+            color: #ffee00;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-family: Tahoma, Arial, sans-serif;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(255, 238, 0, 0.3);
+        }
+
+        .contact-info p {
+            margin: 10px 0;
+        }
+
+        .contact-link {
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 5px 0;
+        }
+
+        .contact-link:hover {
+            color: #ffee00;
+            text-shadow: 0 0 8px rgba(255, 238, 0, 0.3);
+        }
+
+        .contact-label {
+            color: rgba(255, 238, 0, 0.8);
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #ffee00;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+            text-shadow: 0 0 10px #ffee00;
+        }
+
+        h2 {
+            color: #ffee00;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-family: Tahoma, Arial, sans-serif;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 238, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            .neon-btn {
+                font-size: 18px;
+            }
+
+            .popup-content {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -63,7 +254,69 @@
     </div>
     <section id="head-section">
     </section>
+    <div id="neon-buttons">
+        <button id="about-btn" class="neon-btn">About</button>
+        <button id="careers-btn" class="neon-btn">Careers</button>
+    </div>
+
+    <!-- Popups -->
+    <div id="about-popup" class="neon-popup">
+        <div class="popup-content">
+            <span class="close-btn" data-close="about-popup">&times;</span>
+            <h2>About Us</h2>
+            <p>
+                At 2020 Productions, we're not just about creating content; we're about transforming your vision into victories. Established in 2020, we are a dynamic team passionate about sparking the flame for your brand and crafting bold stories that truly make an impact.
+                <br/><br/>
+We lead with a clear vision, aiming to leave our mark by delivering sharp, bright, and bold solutions. Whether it's through captivating visuals, strategic branding, or targeted digital campaigns, we're ready for the challenge. Your dream, combined with our dedicated team, is how we rise with pride.
+            </p>
+        </div>
+    </div>
+    <div id="careers-popup" class="neon-popup">
+        <div class="popup-content">
+            <span class="close-btn" data-close="careers-popup">&times;</span>
+            <h2>Careers</h2>
+            <ul class="career-tiles">
+                <li class="career-tile"><a href="https://docs.google.com/document/d/1VhGVizr_gJhEux_IaeGWnYIwNYyHRnSb-kQVQGhha34/edit?usp=sharing" target="_blank">Content Creator & Video Editor</a></li>
+                <li class="career-tile"><a href="https://docs.google.com/document/d/1xFlMVHT8wkg9FCmzV_oPsbVVHpihldhrCgF13rynUzY/edit?usp=sharing" target="_blank">Script Writer (English)</a></li>
+            </ul>
+            <div class="contact-info">
+                <h3>Contact Us</h3>
+                <p>
+                    <a href="mailto:info@2020productions.in" class="contact-link">
+                        <span class="contact-label">Email:</span> info@2020productions.in
+                    </a>
+                </p>
+                <p>
+                    <a href="tel:+919963812722" class="contact-link">
+                        <span class="contact-label">Phone:</span> +91 9963 812722
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
     <script type="module" src="scripts/threeSetup.js"></script>
     <script type="module" src="scripts/main.js"></script>
+    <script>
+        // Neon button popup logic
+        const aboutBtn = document.getElementById('about-btn');
+        const careersBtn = document.getElementById('careers-btn');
+        const aboutPopup = document.getElementById('about-popup');
+        const careersPopup = document.getElementById('careers-popup');
+        const closeBtns = document.querySelectorAll('.close-btn');
+
+        aboutBtn.onclick = () => { aboutPopup.style.display = 'flex'; }
+        careersBtn.onclick = () => { careersPopup.style.display = 'flex'; }
+        closeBtns.forEach(btn => {
+            btn.onclick = () => {
+                document.getElementById(btn.dataset.close).style.display = 'none';
+            }
+        });
+        // Close popup when clicking outside content
+        [aboutPopup, careersPopup].forEach(popup => {
+            popup.onclick = (e) => {
+                if (e.target === popup) popup.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
