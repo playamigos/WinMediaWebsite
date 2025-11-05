@@ -16,6 +16,13 @@
     }
     </script>
     <style>
+        html {
+            overflow-x: hidden;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            height: auto;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -26,8 +33,12 @@
             font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #000;
             color: #fff;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
+            height: auto;
+            min-height: 100vh;
+        }
         }
 
         /* Custom Scrollbar Styles */
@@ -157,23 +168,43 @@
             }
         }
 
-        /* Main container for sliding pages */
+        /* Main container - now vertical scrolling */
         .pages-container {
-            width: 500vw;
-            height: 100vh;
-            display: flex;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            width: 100vw;
+            height: auto;
+            min-height: 100vh;
+            display: block;
         }
 
         .page {
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
             display: flex;
             flex-direction: column;
+            padding: 60px 0 40px;
         }
 
-        /* Navigation */
+        /* Ensure content is scrollable */
+        #services-page,
+        #careers-page,
+        #about-page,
+        #contact-page {
+            min-height: 100vh;
+        }
+        
+        /* Debug: Force scrollable height */
+        .pages-container {
+            min-height: 400vh !important;
+        }
+
+        /* Home page should be full height */
+        #home-page {
+            height: 100vh;
+            padding: 0;
+        }
+
+        /* Navigation - now acts as anchor links */
         .bottom-nav {
             position: fixed;
             bottom: 15px;
@@ -1273,7 +1304,13 @@
             }
             
             .page {
-                padding: 40px 0 80px;
+                padding: 50px 0 30px;
+                min-height: auto;
+            }
+            
+            #home-page {
+                height: 100vh;
+                padding: 0;
             }
             
             .about-section {
@@ -1449,7 +1486,13 @@
             }
             
             .page {
-                padding: 30px 0 70px;
+                padding: 40px 0 20px;
+                min-height: auto;
+            }
+            
+            #home-page {
+                height: 100vh;
+                padding: 0;
             }
             
             .about-section {
@@ -1784,43 +1827,26 @@
 
     <script type="module" src="scripts/main.js"></script>
     <script>
-        // Page navigation system
-        let currentPage = 0;
-        let isScrolling = false;
-        let scrollTimeout;
-        let lastWheelEvent = 0;
-        const wheelCooldown = 1000; // 1 second cooldown between page changes
-        const pagesContainer = document.getElementById('pages-container');
+        // Smooth scroll navigation system
         const navButtons = document.querySelectorAll('.nav-btn');
         const pages = document.querySelectorAll('.page');
 
-        // Enhanced navigation function with better state management
+        // Enhanced navigation function with smooth scrolling
         function navigateToPage(pageIndex) {
-            if (pageIndex < 0 || pageIndex >= pages.length || pageIndex === currentPage) {
-                isScrolling = false;
+            if (pageIndex < 0 || pageIndex >= pages.length) {
                 return;
             }
             
-            currentPage = pageIndex;
-            const translateX = -pageIndex * 100;
-            pagesContainer.style.transform = `translateX(${translateX}vw)`;
+            const targetPage = pages[pageIndex];
+            targetPage.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
             
             // Update active button
             navButtons.forEach((btn, index) => {
                 btn.classList.toggle('active', index === pageIndex);
             });
-            
-            // Toggle grid background visibility based on current page
-            if (pageIndex === 0) {
-                document.body.classList.add('home-page');
-            } else {
-                document.body.classList.remove('home-page');
-            }
-            
-            // Reset scrolling flag after animation completes
-            setTimeout(() => {
-                isScrolling = false;
-            }, 850); // Slightly longer than CSS transition
         }
 
         // Add click listeners to navigation buttons
@@ -1828,179 +1854,31 @@
             btn.addEventListener('click', () => navigateToPage(index));
         });
 
-        // Global scroll-based navigation with strict control
-        // Debounced scroll handler
-        function handleWheelScroll(e) {
-            const now = Date.now();
+        // Update active navigation based on scroll position
+        function updateActiveNavigation() {
+            const scrollPosition = window.scrollY + window.innerHeight / 2;
             
-            // Ignore wheel events during cooldown period
-            if (now - lastWheelEvent < wheelCooldown) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Already scrolling, ignore
-            if (isScrolling) {
-                e.preventDefault();
-                return;
-            }
-            
-            const currentPageElement = pages[currentPage];
-            
-            // Check for horizontal scrolling (deltaX)
-            if (Math.abs(e.deltaX) > 50) {
-                e.preventDefault();
-                lastWheelEvent = now;
-                isScrolling = true;
+            let activeIndex = 0;
+            pages.forEach((page, index) => {
+                const pageTop = page.offsetTop;
+                const pageBottom = pageTop + page.offsetHeight;
                 
-                if (e.deltaX > 0 && currentPage < pages.length - 1) {
-                    // Scroll right - go to next page
-                    navigateToPage(currentPage + 1);
-                } else if (e.deltaX < 0 && currentPage > 0) {
-                    // Scroll left - go to previous page
-                    navigateToPage(currentPage - 1);
-                } else {
-                    isScrolling = false; // Reset if no navigation happened
+                if (scrollPosition >= pageTop && scrollPosition < pageBottom) {
+                    activeIndex = index;
                 }
-                return;
-            }
+            });
             
-            // For home page (no scroll content) - always prevent default for vertical scroll
-            if (currentPage === 0) {
-                e.preventDefault();
-                
-                if (Math.abs(e.deltaY) > 50) { // Minimum scroll threshold
-                    lastWheelEvent = now;
-                    isScrolling = true;
-                    
-                    if (e.deltaY > 0 && currentPage < pages.length - 1) {
-                        navigateToPage(currentPage + 1);
-                    } else if (e.deltaY < 0 && currentPage > 0) {
-                        navigateToPage(currentPage - 1);
-                    } else {
-                        isScrolling = false; // Reset if no navigation happened
-                    }
-                }
-                return;
-            }
-
-            // For scrollable pages - vertical scroll navigation
-            const isAtTop = currentPageElement.scrollTop <= 1;
-            const isAtBottom = currentPageElement.scrollTop + currentPageElement.clientHeight >= currentPageElement.scrollHeight - 10;
-            
-            // Only navigate if at boundaries and significant scroll
-            if (Math.abs(e.deltaY) > 50) {
-                if (e.deltaY < 0 && isAtTop && currentPage > 0) {
-                    // Scrolling up at top - go to previous page
-                    e.preventDefault();
-                    lastWheelEvent = now;
-                    isScrolling = true;
-                    navigateToPage(currentPage - 1);
-                } else if (e.deltaY > 0 && isAtBottom && currentPage < pages.length - 1) {
-                    // Scrolling down at bottom - go to next page
-                    e.preventDefault();
-                    lastWheelEvent = now;
-                    isScrolling = true;
-                    navigateToPage(currentPage + 1);
-                }
-            }
+            navButtons.forEach((btn, index) => {
+                btn.classList.toggle('active', index === activeIndex);
+            });
         }
-        
-        // Add wheel listener with passive: false for preventDefault
-        document.addEventListener('wheel', handleWheelScroll, { passive: false });
 
-        // Touch support for mobile with horizontal and vertical swipes
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchEndX = 0;
-        let touchEndY = 0;
-
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
+        // Listen for scroll events to update navigation
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(updateActiveNavigation, 50);
         });
-
-        document.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            if (isScrolling) return; // Prevent swipe during ongoing transition
-            
-            const swipeThreshold = 50;
-            const horizontalDistance = touchStartX - touchEndX;
-            const verticalDistance = touchStartY - touchEndY;
-
-            // Determine if this is primarily a horizontal or vertical swipe
-            const isHorizontalSwipe = Math.abs(horizontalDistance) > Math.abs(verticalDistance);
-
-            if (isHorizontalSwipe && Math.abs(horizontalDistance) > swipeThreshold) {
-                // Horizontal swipe - navigate pages directly
-                isScrolling = true;
-                if (horizontalDistance > 0 && currentPage < pages.length - 1) {
-                    // Swipe left - go to next page
-                    navigateToPage(currentPage + 1);
-                } else if (horizontalDistance < 0 && currentPage > 0) {
-                    // Swipe right - go to previous page
-                    navigateToPage(currentPage - 1);
-                } else {
-                    isScrolling = false;
-                }
-                
-                if (isScrolling) {
-                    setTimeout(() => {
-                        isScrolling = false;
-                    }, 800);
-                }
-                return;
-            }
-
-            // Vertical swipe handling (existing logic)
-            if (Math.abs(verticalDistance) < swipeThreshold) return;
-
-            const currentPageElement = pages[currentPage];
-
-            if (currentPage === 0) {
-                // Home page - always allow swipe navigation
-                isScrolling = true;
-                if (verticalDistance > 0 && currentPage < pages.length - 1) {
-                    navigateToPage(currentPage + 1);
-                } else if (verticalDistance < 0 && currentPage > 0) {
-                    navigateToPage(currentPage - 1);
-                } else {
-                    isScrolling = false;
-                }
-                
-                if (isScrolling) {
-                    setTimeout(() => {
-                        isScrolling = false;
-                    }, 800);
-                }
-                return;
-            }
-
-            // For scrollable pages
-            const isAtTop = currentPageElement.scrollTop === 0;
-            const isAtBottom = currentPageElement.scrollTop + currentPageElement.clientHeight >= currentPageElement.scrollHeight - 5;
-
-            if (verticalDistance < 0 && isAtTop && currentPage > 0) {
-                // Swipe down at top - go to previous page
-                isScrolling = true;
-                navigateToPage(currentPage - 1);
-                setTimeout(() => {
-                    isScrolling = false;
-                }, 800);
-            } else if (verticalDistance > 0 && isAtBottom && currentPage < pages.length - 1) {
-                // Swipe up at bottom - go to next page
-                isScrolling = true;
-                navigateToPage(currentPage + 1);
-                setTimeout(() => {
-                    isScrolling = false;
-                }, 800);
-            }
-        }
 
         // Job dropdown functionality
         function toggleJob(header) {
@@ -2013,15 +1891,6 @@
 
         // Make toggleJob function global
         window.toggleJob = toggleJob;
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' && currentPage > 0) {
-                navigateToPage(currentPage - 1);
-            } else if (e.key === 'ArrowRight' && currentPage < 4) {
-                navigateToPage(currentPage + 1);
-            }
-        });
 
         // Advanced Gold Particle Trail Effect
         let mouseX = 0;
@@ -2080,125 +1949,69 @@
             // Variable size based on speed (3-12px)
             const size = Math.min(3 + speed * 0.3, 12);
             
-            // Variable opacity based on speed (0.3-0.9)
-            const opacity = Math.min(0.3 + speed * 0.02, 0.9);
-            
-            // Set initial properties
+            // Activate particle
             particle.active = true;
             particle.x = x;
             particle.y = y;
-            particle.vx = velocityX * 0.1; // Reduced velocity for smoother movement
-            particle.vy = velocityY * 0.1;
+            particle.vx = (Math.random() - 0.5) * 2 + velocityX * 0.1;
+            particle.vy = (Math.random() - 0.5) * 2 + velocityY * 0.1;
             particle.life = 0;
-            particle.maxLife = 1500 + Math.random() * 1000; // Variable lifetime
+            particle.maxLife = 1000 + Math.random() * 1500;
             
-            // Style the particle
+            // Style particle
             const element = particle.element;
             element.style.display = 'block';
-            element.style.left = (x - size/2) + 'px';
-            element.style.top = (y - size/2) + 'px';
-            element.style.width = size + 'px';
-            element.style.height = size + 'px';
-            element.style.opacity = opacity;
-            element.style.animation = `particleFloat ${particle.maxLife}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+            element.style.left = `${x}px`;
+            element.style.top = `${y}px`;
+            element.style.width = `${size}px`;
+            element.style.height = `${size}px`;
+            element.style.opacity = '1';
         }
 
-        // Efficient particle update loop
         function updateParticles() {
             particlePool.forEach(particle => {
                 if (!particle.active) return;
                 
-                particle.life += 16; // ~60fps
-                
+                particle.life += 16;
                 if (particle.life >= particle.maxLife) {
                     particle.active = false;
                     particle.element.style.display = 'none';
                     return;
                 }
                 
-                // Apply physics - velocity decay and movement
-                particle.vx *= 0.98; // Velocity decay
-                particle.vy *= 0.98;
+                // Update position
                 particle.x += particle.vx;
                 particle.y += particle.vy;
+                particle.vy += 0.1; // Slight gravity
+                particle.vx *= 0.99; // Air resistance
                 
-                // Update position
-                const element = particle.element;
-                element.style.left = particle.x + 'px';
-                element.style.top = particle.y + 'px';
+                // Fade out over time
+                const opacity = 1 - (particle.life / particle.maxLife);
+                
+                particle.element.style.left = `${particle.x}px`;
+                particle.element.style.top = `${particle.y}px`;
+                particle.element.style.opacity = opacity;
             });
         }
-        
-        // Start particle update loop
-        setInterval(updateParticles, 16); // ~60fps
 
-        // Particle Blast Effect on Click
-        document.addEventListener('click', (e) => {
-            createParticleBlast(e.clientX, e.clientY);
-        });
+        // Update particles every frame
+        setInterval(updateParticles, 16);
 
-        function createParticleBlast(x, y) {
-            const particleCount = 12; // Number of particles in blast
-            const colors = ['#ffd700', '#ffaa00']; // Same colors as trail particles
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'blast-particle';
-                
-                // Random size for variety (4-10px)
-                const size = 4 + Math.random() * 6;
-                
-                // Calculate angle for circular explosion
-                const angle = (i / particleCount) * Math.PI * 2;
-                const velocity = 150 + Math.random() * 100; // Random velocity
-                const distance = 50 + Math.random() * 80; // Random distance
-                
-                // Calculate final position
-                const finalX = x + Math.cos(angle) * distance;
-                const finalY = y + Math.sin(angle) * distance;
-                
-                // Set initial position
-                particle.style.left = (x - size/2) + 'px';
-                particle.style.top = (y - size/2) + 'px';
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random() * colors.length)]}, #ffaa00)`;
-                
-                // Add to document
-                document.body.appendChild(particle);
-                
-                // Animate to final position
-                setTimeout(() => {
-                    particle.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    particle.style.left = (finalX - size/2) + 'px';
-                    particle.style.top = (finalY - size/2) + 'px';
-                    particle.style.animation = 'blastExplosion 0.8s ease-out forwards';
-                }, 10);
-                
-                // Remove particle after animation
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 900);
-            }
-        }
-
-        // 3D Image Container Interactions
+        // 3D hover effects for service items and team photos
         function init3DEffects() {
             const serviceItems = document.querySelectorAll('.service-item');
             const teamPhotos = document.querySelectorAll('.team-photo');
             
-            function handleMouseMove(element, event) {
+            function handleMouseMove(element, e) {
                 const rect = element.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
                 
-                const rotateX = (y - centerY) / centerY * -10;
-                const rotateY = (x - centerX) / centerX * 10;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
                 
                 element.style.setProperty('--rotateX', `${rotateX}deg`);
                 element.style.setProperty('--rotateY', `${rotateY}deg`);
@@ -2209,45 +2022,40 @@
                 element.style.setProperty('--rotateY', '0deg');
             }
             
-            function handleServiceClick(element) {
-                const allServiceItems = document.querySelectorAll('.service-item');
-                const isCurrentlyExpanded = element.classList.contains('expanded');
+            // Service tile expansion functionality
+            let expandedTile = null;
+            
+            function handleServiceClick(clickedItem) {
+                const wasExpanded = clickedItem.classList.contains('expanded');
                 
-                if (isCurrentlyExpanded) {
-                    // Collapse the expanded tile
-                    collapseAllTiles();
-                } else {
-                    // Expand the clicked tile
-                    expandTile(element);
+                // Collapse all tiles first
+                collapseAllTiles();
+                
+                // If the clicked tile wasn't expanded, expand it
+                if (!wasExpanded) {
+                    expandTile(clickedItem);
                 }
             }
             
-            function expandTile(element) {
-                const allServiceItems = document.querySelectorAll('.service-item');
+            function expandTile(item) {
+                if (expandedTile) return; // Prevent multiple expansions
                 
-                // First collapse any existing expanded tiles
-                collapseAllTiles();
+                expandedTile = item;
+                item.classList.add('expanded');
+                item.classList.remove('normal');
                 
-                // Add expanded state to clicked element
-                element.classList.remove('blurred', 'normal');
-                element.classList.add('expanded');
-                
-                // Blur and minimize other tiles
-                setTimeout(() => {
-                    allServiceItems.forEach(item => {
-                        if (item !== element) {
-                            item.classList.remove('normal', 'expanded');
-                            item.classList.add('blurred');
-                        }
-                    });
-                }, 100);
+                // Apply blur to other tiles
+                serviceItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.add('blurred');
+                        otherItem.classList.remove('normal');
+                    }
+                });
             }
             
             function collapseAllTiles() {
-                const allServiceItems = document.querySelectorAll('.service-item');
-                
-                // Reset all tiles to normal state
-                allServiceItems.forEach(item => {
+                expandedTile = null;
+                serviceItems.forEach(item => {
                     item.classList.remove('expanded', 'blurred');
                     item.classList.add('normal');
                 });
@@ -2306,22 +2114,11 @@
         
         // Initialize 3D effects when DOM is loaded
         document.addEventListener('DOMContentLoaded', init3DEffects);
-
-        // Dynamic grid color changes
-        let gridHue = 60; // Start with yellow
-        const body = document.body;
         
-        setInterval(() => {
-            gridHue = (gridHue + 0.5) % 360;
-            const color1 = `hsl(${gridHue}, 100%, 50%)`;
-            const color2 = `hsl(${(gridHue + 30) % 360}, 100%, 50%)`;
-            
-            body.style.setProperty('--grid-color-1', color1);
-            body.style.setProperty('--grid-color-2', color2);
-        }, 100);
-        
-        // Initialize home page class on load
-        document.body.classList.add('home-page');
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            updateActiveNavigation();
+        });
     </script>
 </body>
 </html>
