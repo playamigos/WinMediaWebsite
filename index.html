@@ -353,6 +353,12 @@
             transition: all 0.5s ease;
         }
 
+        .service-item.expanded .service-header {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
         .service-item.popup .service-header {
             height: auto;
             padding: 40px;
@@ -385,21 +391,57 @@
             z-index: 2;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(255, 238, 0, 0.15));
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 238, 0, 0.3);
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(10px);
+            transition: max-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        opacity 0.4s ease 0.2s, 
+                        transform 0.4s ease 0.2s;
         }
 
         .service-item.expanded .service-details {
-            max-height: 400px;
-            overflow: visible;
-            padding: 30px 25px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 100%;
+            height: 100%;
+            overflow: auto;
+            padding: 30px;
             opacity: 1;
             transform: translateY(0);
-            transition-delay: 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: max-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        opacity 0.4s ease 0.1s, 
+                        transform 0.4s ease 0.1s;
+        }
+
+        .service-item.expanded .service-details::before {
+            content: attr(data-title);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffee00;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            display: block;
+        }
+
+        .service-item.expanded .service-description-text {
+            font-size: 0.75rem;
+            color: #e5e5e5;
+            font-family: 'Inter', sans-serif;
+            margin: 0 15px 8px 15px;
+            text-align: justify;
+            line-height: 1.4;
+            opacity: 0.9;
+            display: block;
         }
 
         .service-item.expanded .service-title {
@@ -441,32 +483,27 @@
         .service-list li {
             color: #e5e5e5;
             font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            padding: 12px 0;
+            font-size: 0.75rem;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255, 238, 0, 0.2);
             position: relative;
-            padding-left: 25px;
-            transition: all 0.3s ease;
+            padding-left: 30px;
             opacity: 0;
             transform: translateY(20px);
+            transition: none;
         }
 
         .service-item.expanded .service-list li {
             opacity: 1;
             transform: translateY(0);
-            font-size: 1rem;
-            padding: 15px 20px;
+            font-size: 0.75rem;
+            padding: 10px 30px 10px 30px;
             background: rgba(255, 238, 0, 0.05);
             border: 1px solid rgba(255, 238, 0, 0.2);
-            border-radius: 8px;
+            border-radius: 6px;
             border-bottom: 1px solid rgba(255, 238, 0, 0.2);
-            transition: all 0.5s ease;
+            transition: opacity 0.4s ease, transform 0.4s ease, background 0.3s ease, box-shadow 0.3s ease;
         }
-
-        .service-item.expanded .service-list li:nth-child(1) { transition-delay: 0.5s; }
-        .service-item.expanded .service-list li:nth-child(2) { transition-delay: 0.6s; }
-        .service-item.expanded .service-list li:nth-child(3) { transition-delay: 0.7s; }
-        .service-item.expanded .service-list li:nth-child(4) { transition-delay: 0.8s; }
 
         .service-item.expanded .service-list li:hover {
             background: rgba(255, 238, 0, 0.1);
@@ -479,12 +516,12 @@
             color: #ffee00;
             font-weight: bold;
             position: absolute;
-            left: 0;
+            left: 10px;
         }
 
-        .service-item.popup .service-list li:before {
-            left: 8px;
-            font-size: 1.2rem;
+        .service-item.expanded .service-list li:before {
+            left: 10px;
+            font-size: 0.9rem;
         }
 
         .service-list li:last-child {
@@ -630,9 +667,10 @@
         .job-content {
             padding: 0 20px 20px;
             color: #e5e5e5;
-            line-height: 1.7;
+            line-height: 1.6;
             font-family: 'Inter', sans-serif;
             font-weight: 400;
+            font-size: 14px;
         }
 
         .job-requirements {
@@ -714,14 +752,21 @@
 
         .team-photos {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
             margin: 30px 0;
         }
 
+        .team-member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
         .team-photo {
-            width: 100%;
-            height: 200px;
+            width: 160px;
+            height: 160px;
             border-radius: 15px;
             object-fit: cover;
             border: 2px solid rgba(255, 238, 0, 0.3);
@@ -734,6 +779,17 @@
                 0 4px 8px rgba(0, 0, 0, 0.1),
                 0 0 15px rgba(255, 238, 0, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .team-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffee00;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .team-photo:hover {
@@ -1184,7 +1240,16 @@
             
             .team-photos {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                gap: 20px;
+            }
+            
+            .team-photo {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .team-name {
+                font-size: 0.8rem;
             }
             
             .contact-info {
@@ -1194,6 +1259,7 @@
             
             .job-content {
                 padding: 0 15px 15px;
+                font-size: 13px;
             }
 
             .popup-content {
@@ -1241,8 +1307,17 @@
             }
             
             .team-photos {
-                grid-template-columns: 1fr;
-                gap: 10px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .team-photo {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .team-name {
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -1266,9 +1341,10 @@
                 <div class="service-item" style="background-image: url('https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop');">
                     <div class="service-header">
                         <div class="service-title">Content Creation</div>
-                        <div class="service-description">2D & 3D Animation</div>
+                        <div class="service-description">from Live shoots to Animation to AI</div>
                     </div>
-                    <div class="service-details">
+                    <div class="service-details" data-title="Content Creation">
+                        <div class="service-description-text">Transform your ideas into compelling visual stories. From dynamic social media content to professional documentaries, we create engaging videos that captivate your audience. Our team combines creative storytelling with cutting-edge technology, including AI-powered content creation, to deliver exceptional results that drive engagement and growth.</div>
                         <ul class="service-list">
                             <li>Reels, Shorts & Memes</li>
                             <li>Documentaries & Explainers</li>
@@ -1282,7 +1358,8 @@
                         <div class="service-title">Branding</div>
                         <div class="service-description">Complete Brand Identity Solutions</div>
                     </div>
-                    <div class="service-details">
+                    <div class="service-details" data-title="Branding">
+                        <div class="service-description-text">Build a powerful brand identity that resonates with your audience and stands out in the market. We create comprehensive brand ecosystems that include visual identity, messaging strategy, and campaign assets. Our branding solutions help businesses and individuals establish a strong, memorable presence that drives recognition and trust.</div>
                         <ul class="service-list">
                             <li>Logo Design & Identity</li>
                             <li>Brand Strategy & Messaging</li>
@@ -1297,7 +1374,8 @@
                         <div class="service-title">Digital Marketing</div>
                         <div class="service-description">Data-Driven Growth Strategies</div>
                     </div>
-                    <div class="service-details">
+                    <div class="service-details" data-title="Digital Marketing">
+                        <div class="service-description-text">Accelerate your digital growth with data-driven marketing strategies that deliver measurable results. Our comprehensive approach combines SEO optimization, targeted advertising, and social media management to maximize your online presence. We leverage analytics and insights to continuously optimize campaigns for better ROI and sustained growth.</div>
                         <ul class="service-list">
                             <li>SEO, SEM & Google Ads</li>
                             <li>Social Media Management</li>
@@ -1312,7 +1390,8 @@
                         <div class="service-title">Political Strategy & Management</div>
                         <div class="service-description">Comprehensive Campaign Solutions</div>
                     </div>
-                    <div class="service-details">
+                    <div class="service-details" data-title="Political Strategy & Management">
+                        <div class="service-description-text">Navigate the complex political landscape with strategic planning and comprehensive campaign management. Our expert team provides end-to-end political solutions, from strategic planning to media coverage, ensuring your political message reaches the right audience effectively. We combine traditional campaign tactics with modern digital strategies for maximum impact.</div>
                         <ul class="service-list">
                             <li>Political Campaign Planning</li>
                             <li>Event Shoots & Rally Coverage</li>
@@ -1328,22 +1407,22 @@
             <div class="jobs-container">
                 <div class="job-item">
                     <div class="job-header" onclick="toggleJob(this)">
-                        <div class="job-title">Content Creator & Video Editor</div>
+                        <div class="job-title">Video Editor (2+ Years Experience)</div>
                         <div class="job-arrow">▼</div>
                     </div>
                     <div class="job-details">
                         <div class="job-content">
-                            <p>Join our creative team as a Content Creator & Video Editor! We're looking for someone passionate about storytelling through visual media.</p>
+                            <p>Join our creative team as a Video Editor! We're looking for an experienced professional to bring stories to life through compelling video content.</p>
                             <div class="job-requirements">
                                 <h4>Requirements:</h4>
                                 <ul>
-                                    <li>2+ years experience in video editing</li>
-                                    <li>Proficiency in Adobe Creative Suite</li>
-                                    <li>Strong understanding of social media platforms</li>
-                                    <li>Creative mindset with attention to detail</li>
-                                    <li>Ability to work under tight deadlines</li>
+                                    <li>Minimum 2 years of professional video editing experience</li>
+                                    <li>Proficiency in Adobe Premiere Pro, After Effects, and DaVinci Resolve</li>
+                                    <li>Strong understanding of color grading and audio mixing</li>
+                                    <li>Experience with motion graphics and visual effects</li>
+                                    <li>Bachelor's degree in Film Production, Media Studies, or related field</li>
+                                    <li>Portfolio showcasing diverse video projects</li>
                                 </ul>
-                                <p><a href="https://docs.google.com/document/d/1VhGVizr_gJhEux_IaeGWnYIwNYyHRnSb-kQVQGhha34/edit?usp=sharing" target="_blank" style="color: #ffee00;">View Full Job Description →</a></p>
                             </div>
                         </div>
                     </div>
@@ -1351,22 +1430,46 @@
 
                 <div class="job-item">
                     <div class="job-header" onclick="toggleJob(this)">
-                        <div class="job-title">Script Writer (English)</div>
+                        <div class="job-title">AI Content Creator (Intern)</div>
                         <div class="job-arrow">▼</div>
                     </div>
                     <div class="job-details">
                         <div class="job-content">
-                            <p>We're seeking a talented Script Writer to create compelling narratives for our video content and marketing campaigns.</p>
+                            <p>Exciting internship opportunity for an AI Content Creator! Learn and contribute to cutting-edge content creation using AI tools and technologies.</p>
                             <div class="job-requirements">
                                 <h4>Requirements:</h4>
                                 <ul>
-                                    <li>Excellent command of English language</li>
-                                    <li>3+ years of professional writing experience</li>
-                                    <li>Experience in marketing copy and video scripts</li>
-                                    <li>Understanding of brand voice development</li>
-                                    <li>Portfolio of previous work</li>
+                                    <li>Currently pursuing or completed degree in Computer Science, Digital Media, or related field</li>
+                                    <li>Basic understanding of AI tools (ChatGPT, Midjourney, Stable Diffusion, etc.)</li>
+                                    <li>Familiarity with content creation platforms and social media</li>
+                                    <li>Creative mindset with interest in emerging technologies</li>
+                                    <li>Strong written communication skills</li>
+                                    <li>Willingness to learn and experiment with new AI tools</li>
                                 </ul>
-                                <p><a href="https://docs.google.com/document/d/1xFlMVHT8wkg9FCmzV_oPsbVVHpihldhrCgF13rynUzY/edit?usp=sharing" target="_blank" style="color: #ffee00;">View Full Job Description →</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="job-item">
+                    <div class="job-header" onclick="toggleJob(this)">
+                        <div class="job-title">Political Analyst & Writer</div>
+                        <div class="job-arrow">▼</div>
+                    </div>
+                    <div class="job-details">
+                        <div class="job-content">
+                            <p>We're seeking a skilled Political Analyst & Writer to provide insightful analysis and create compelling political content for our campaigns and clients.</p>
+                            <div class="job-requirements">
+                                <h4>Requirements:</h4>
+                                <ul>
+                                    <li>Bachelor's degree in Political Science, Journalism, Communications, or related field</li>
+                                    <li>3+ years of experience in political analysis or campaign work</li>
+                                    <li>Excellent research and analytical skills</li>
+                                    <li>Strong writing abilities across multiple formats (reports, speeches, social media)</li>
+                                    <li>Deep understanding of Indian political landscape and electoral processes</li>
+                                    <li>Experience with data analysis and political polling</li>
+                                    <li>Ability to work under pressure during campaign periods</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -1400,10 +1503,58 @@
                 <div class="about-section">
                     <h2 style="color: #ffee00; margin-bottom: 20px;">Our Team</h2>
                     <div class="team-photos">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=face" alt="Team Member" class="team-photo">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face" alt="Team Member" class="team-photo">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face" alt="Team Member" class="team-photo">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face" alt="Team Member" class="team-photo">
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=VINOD&backgroundColor=00b894,00cec9,74b9ff,fd79a8,ffeaa7&scale=80" alt="Vinod Kumar" class="team-photo">
+                            <div class="team-name">Vinod Kumar</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=RAVI&backgroundColor=ff6b6b,4ecdc4,45b7d1,96ceb4,ffeaa7&scale=80" alt="Ravi Teja" class="team-photo">
+                            <div class="team-name">Ravi Teja</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=BALAJI&backgroundColor=fd79a8,fdcb6e,6c5ce7,fd79a8,e17055&scale=80" alt="Balaji" class="team-photo">
+                            <div class="team-name">Balaji</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=QUAYYAM&backgroundColor=74b9ff,0984e3,00b894,00cec9,fdcb6e&scale=80" alt="Quayyam" class="team-photo">
+                            <div class="team-name">Quayyam</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=SATYA&backgroundColor=fd79a8,fdcb6e,6c5ce7,a29bfe,55a3ff&scale=80" alt="Satya Sowmya" class="team-photo">
+                            <div class="team-name">Satya Sowmya</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=DHARMA&backgroundColor=ff7675,fd79a8,fdcb6e,55a3ff,26de81&scale=80" alt="Dharma Teja" class="team-photo">
+                            <div class="team-name">Dharma Teja</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=VIVEK&backgroundColor=6c5ce7,a29bfe,fd79a8,55a3ff,26de81&scale=80" alt="Vivek" class="team-photo">
+                            <div class="team-name">Vivek</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=BABU&backgroundColor=e17055,fd79a8,fdcb6e,74b9ff,00cec9&scale=80" alt="Babu" class="team-photo">
+                            <div class="team-name">Babu</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=AVINASH&backgroundColor=ff6b6b,4ecdc4,45b7d1,ffeaa7,fd79a8&scale=80" alt="Avinash" class="team-photo">
+                            <div class="team-name">Avinash</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=SAIKRISHNA&backgroundColor=55a3ff,26de81,fd79a8,fdcb6e,6c5ce7&scale=80" alt="Sai Krishna Editor" class="team-photo">
+                            <div class="team-name">Sai Krishna Editor</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=LATHA&backgroundColor=fd79a8,ffeaa7,74b9ff,00b894,e17055&scale=80" alt="Latha Sree" class="team-photo">
+                            <div class="team-name">Latha Sree</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=BENARJI&backgroundColor=26de81,55a3ff,fd79a8,fdcb6e,00cec9&scale=80" alt="Benarji" class="team-photo">
+                            <div class="team-name">Benarji</div>
+                        </div>
+                        <div class="team-member">
+                            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=DLKPRASAD&backgroundColor=a29bfe,6c5ce7,fd79a8,74b9ff,ffeaa7&scale=80" alt="Dlk Prasad" class="team-photo">
+                            <div class="team-name">Dlk Prasad</div>
+                        </div>
                     </div>
                 </div>
             </div>
