@@ -203,23 +203,16 @@
             display: flex;
             flex-direction: column;
             padding: 60px 0 40px;
-            clip-path: polygon(
-                0 0,
-                100% 0,
-                100% calc(100% - var(--tilt-offset-right, 0px)),
-                0 calc(100% - var(--tilt-offset-left, 0px))
-            );
-            margin-bottom: 0;
         }
 
-        /* Golden tilted borders between sections */
-        .page::after {
+        /* Golden border at top of page */
+        body::after {
             content: '';
-            position: absolute;
-            bottom: 0;
+            position: fixed;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
+            height: 3px;
             background: linear-gradient(90deg, 
                 transparent 0%, 
                 #ffd700 10%, 
@@ -227,37 +220,58 @@
                 #ffd700 90%, 
                 transparent 100%);
             box-shadow: 
-                0 0 15px rgba(255, 215, 0, 0.8),
-                0 0 25px rgba(255, 238, 0, 0.6),
-                0 0 35px rgba(255, 215, 0, 0.4);
-            transform-origin: center;
-            clip-path: polygon(
-                0 calc(50% + var(--tilt-offset-left, 0px)),
-                100% calc(50% + var(--tilt-offset-right, 0px)),
-                100% calc(50% + var(--tilt-offset-right, 0px) + 3px),
-                0 calc(50% + var(--tilt-offset-left, 0px) + 3px)
-            );
+                0 0 10px rgba(255, 215, 0, 0.6),
+                0 0 20px rgba(255, 238, 0, 0.4),
+                0 0 30px rgba(255, 215, 0, 0.2);
+            z-index: 1001;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        /* Golden borders between sections */
+        .page::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #ffd700 10%, 
+                #ffee00 50%, 
+                #ffd700 90%, 
+                transparent 100%);
+            box-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.6),
+                0 0 20px rgba(255, 238, 0, 0.4),
+                0 0 30px rgba(255, 215, 0, 0.2);
             z-index: 10;
-            pointer-events: none;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        /* No border after home page */
+        #home-page::after {
+            display: block;
         }
 
         /* Animate border glow */
         @keyframes borderGlow {
             0%, 100% {
-                opacity: 1;
+                box-shadow: 
+                    0 0 10px rgba(255, 215, 0, 0.6),
+                    0 0 20px rgba(255, 238, 0, 0.4),
+                    0 0 30px rgba(255, 215, 0, 0.2);
             }
             50% {
-                opacity: 0.7;
+                box-shadow: 
+                    0 0 15px rgba(255, 215, 0, 0.8),
+                    0 0 30px rgba(255, 238, 0, 0.6),
+                    0 0 45px rgba(255, 215, 0, 0.4);
             }
         }
 
         .page::after {
             animation: borderGlow 3s ease-in-out infinite;
-        }
-
-        /* Home page - no top padding to prevent gap */
-        #home-page {
-            padding-top: 0;
         }
 
         /* Ensure content is scrollable */
@@ -2565,37 +2579,10 @@
             });
         }
 
-        // Animate section borders on scroll
-        function animateSectionBorders() {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-            
-            pages.forEach((page, index) => {
-                const pageTop = page.offsetTop;
-                const pageBottom = pageTop + page.offsetHeight;
-                const pageMiddle = pageTop + (page.offsetHeight / 2);
-                
-                // Calculate tilt based on scroll position relative to page
-                const scrollProgress = (scrollY - pageTop) / page.offsetHeight;
-                const distanceFromMiddle = scrollY + (windowHeight / 2) - pageMiddle;
-                
-                // Create dynamic tilt angle (-10deg to 10deg)
-                const baseTilt = Math.sin(scrollProgress * Math.PI * 2) * 6;
-                const scrollTilt = (distanceFromMiddle / windowHeight) * 4;
-                const tiltAngle = baseTilt + scrollTilt;
-                
-                // Apply transform to the border
-                if (page.style) {
-                    page.style.setProperty('--border-tilt', `${tiltAngle}deg`);
-                }
-            });
-        }
-
-        // Listen for scroll events to update navigation and borders
+        // Listen for scroll events to update navigation
         let scrollTimeout;
         window.addEventListener('scroll', () => {
             clearTimeout(scrollTimeout);
-            animateSectionBorders();
             scrollTimeout = setTimeout(updateActiveNavigation, 50);
         });
 
@@ -3007,7 +2994,6 @@
         // Initialize on page load
         window.addEventListener('load', () => {
             updateActiveNavigation();
-            animateSectionBorders();
         });
     </script>
 </body>
